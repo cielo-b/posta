@@ -6,13 +6,20 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: "#3b82f6", // blue-500
-        tabBarInactiveTintColor: "#9ca3af", // gray-400
+        tabBarActiveTintColor: "#3b82f6",
+        tabBarInactiveTintColor: "#94a3b8",
         tabBarStyle: {
-          backgroundColor: "#ffffff", // white
+          backgroundColor: "#ffffff",
           borderTopWidth: 0,
           elevation: 0,
           shadowOpacity: 0,
+          height: 60,
+          paddingBottom: 8,
+        },
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: "500",
+          marginBottom: 4,
         },
       }}
     >
@@ -21,7 +28,7 @@ export default function TabLayout() {
         options={{
           title: "Feed",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="newspaper" color={color} size={size} />
+            <Ionicons name="newspaper-outline" color={color} size={size} />
           ),
         }}
       />
@@ -30,7 +37,7 @@ export default function TabLayout() {
         options={{
           title: "Create",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="add-circle" color={color} size={size} />
+            <Ionicons name="add-circle-outline" color={color} size={size} />
           ),
         }}
       />
@@ -39,7 +46,7 @@ export default function TabLayout() {
         options={{
           title: "Profile",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person" color={color} size={size} />
+            <Ionicons name="person-outline" color={color} size={size} />
           ),
         }}
       />

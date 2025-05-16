@@ -1,30 +1,36 @@
-import { SafeAreaView, ScrollView, Text, View } from "react-native";
+import { View, Text, ActivityIndicator } from "react-native";
+import { useEffect } from "react";
+import { useRouter } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
 import "../global.css";
-import { Stack, useRouter } from "expo-router";
+import { useAppDispatch } from "@/hooks/hooks";
+import { fetchPosts } from "@/slices/posts.slice";
+
+SplashScreen.preventAutoHideAsync();
 
 export default function Index() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    const prepare = async () => {
+      try {
+        await dispatch<any>(fetchPosts({ start: 0, limit: 10 }));
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        await SplashScreen.hideAsync();
+        router.replace("/(tabs)");
+      }
+    };
+
+    prepare();
+  }, []);
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <Stack.Screen options={{ headerShown: false }} />
-      <ScrollView
-        contentContainerStyle={{
-          flexGrow: 1,
-        }}
-        className="flex-1"
-      >
-        <View className="flex-1 items-center justify-center px-6">
-          <Text className="text-xl font-bold">Welcome to PostStack</Text>
-          <View className="w-full mt-8">
-            {/* <CustomButton
-              title="Go Home"
-              handlePress={() => router.navigate("(tabs)")}
-              containerStyles="mb-3"
-            /> */}
-          </View>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <View className="flex-1 items-center justify-center bg-slate-50">
+      <Text className="text-3xl font-bold text-blue-600 mb-4">PostStack</Text>
+      <ActivityIndicator size="large" color="#3b82f6" />
+    </View>
   );
 }

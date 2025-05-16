@@ -1,50 +1,88 @@
-import { View, TextInput, Pressable, Alert } from "react-native";
-import { useState } from "react";
+import { View, TextInput, Pressable, Text } from "react-native";
 import { useRouter } from "expo-router";
-import { NewPost } from "@/types/new.post";
+import { useState } from "react";
+import Toast from "react-native-toast-message";
+import { useAppDispatch } from "@/hooks/hooks";
+import { createPost } from "@/slices/posts.slice";
 
 export default function CreatePostScreen() {
   const router = useRouter();
-  const [post, setPost] = useState<NewPost>({
+  const dispatch = useAppDispatch();
+  const [post, setPost] = useState({
     title: "",
     body: "",
-    userId: 1, // Hardcoded for demo
+    userId: 1,
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
-    if (!post.title || !post.body) {
-      Alert.alert("Error", "Please fill all fields");
+    if (!post.title.trim() || !post.body.trim()) {
+      Toast.show({
+        type: "error",
+        text1: "Validation Error",
+        text2: "Please fill all fields",
+        position: "bottom",
+      });
       return;
     }
 
+    setIsSubmitting(true);
     try {
-      // TODO: Replace with actual API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      Alert.alert("Success", "Post created successfully");
+      await dispatch(createPost(post)).unwrap();
+
+      Toast.show({
+        type: "success",
+        text1: "Success",
+        text2: "Post created successfully",
+        position: "bottom",
+      });
       setPost({ title: "", body: "", userId: 1 });
       router.push("/(tabs)");
     } catch (error) {
-      Alert.alert("Error", "Failed to create post");
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Failed to create post",
+        position: "bottom",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <View className="flex-1 p-4 bg-gray-50">
+    <View className="flex-1 p-4 bg-slate-50">
+      <Text className="text-xl font-bold text-slate-800 mb-4">
+        Create New Post
+      </Text>
+
       <TextInput
-        className="p-4 mb-3 bg-white rounded-lg"
+        className="p-4 mb-4 bg-white rounded-lg border border-slate-200"
         placeholder="Post title"
+        placeholderTextColor="#94a3b8"
         value={post.title}
         onChangeText={(text) => setPost({ ...post, title: text })}
       />
+
       <TextInput
-        className="p-4 mb-3 bg-white rounded-lg h-40 text-align-top"
+        className="p-4 mb-4 bg-white rounded-lg border border-slate-200 h-40 text-align-top"
         placeholder="What's on your mind?"
+        placeholderTextColor="#94a3b8"
         multiline
         value={post.body}
         onChangeText={(text) => setPost({ ...post, body: text })}
       />
-      <Pressable className="p-4 bg-blue-500 rounded-lg" onPress={handleSubmit}>
-        <Text className="text-white text-center font-bold">Post</Text>
+
+      <Pressable
+        className={`p-4 rounded-lg ${
+          isSubmitting ? "bg-blue-400" : "bg-blue-600"
+        }`}
+        onPress={handleSubmit}
+        disabled={isSubmitting}
+      >
+        <Text className="text-white text-center font-bold">
+          {isSubmitting ? "Posting..." : "Post"}
+        </Text>
       </Pressable>
     </View>
   );
